@@ -1,0 +1,19 @@
+div, h1, h2 {
+    padding: 0; margin: 0;
+}
+div#test {
+    border: 1px solid black;
+      padding: 1px;
+    padding-left: 3px;
+}
+div.foo         ul   {
+       list-style-type: circle;
+    text-decoration: underline;
+    }
+p#hoge,    .bar  div
+{
+    color: red;
+       /* font-size: big; */
+    z-index: 3      ;
+  background: #ff0000;
+}
