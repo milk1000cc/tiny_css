@@ -33,7 +33,8 @@ css.style['.newstyle']['color'] = '#FFFFFF'  # Add a style
 css.style['h1']['color'] = 'black'           # Change a property
 
 # Save a CSS stylesheet
-css.write 'style.css'
+css.write 'style.css'         # Sort selectors and properties
+css.write 'style.css', false  # Don't sort
 
 
 Install
