@@ -11,20 +11,15 @@ module TinyCss
     end
 
     def read_string(string)
-      str = string.dup
-      str.tr!("\n\t", '  ').gsub!(%r!/\*.*?\*/!, '')
+      string = string.tr("\n\t", '  ').gsub(%r!/\*.*?\*/!, '')
 
-      ary = str.split(/\}/)
-      if ary.last =~ /\S/
-        raise Error, 'Invalid or unexpected style data'
-      end
-
-      ary.reject { |v| v !~ /\S/ }.each do |v|
-        unless match = v.match(/^\s*([^{]+?)\s*\{(.*)\s*$/)
+      split_by_closing_brace(string).reject { |v| v !~ /\S/ }.each do |v|
+        unless match = v.match(/^\s*([^{]+?)\s*\{(.*)\}\s*$/)
           raise Error, "Invalid or unexpected style data '#{ v }'"
         end
 
-        styles = match.captures.first.gsub(/\s+/, ' ').split(/\s*,\s*/).
+        style = match.captures.first
+        styles = style.gsub(/\s+/, ' ').split(/\s*,\s*/).
           reject { |v| v !~ /\S/ }
 
         match.captures.last.split(/\;/).reject { |v| v !~ /\S/ }.each do |v|
@@ -58,6 +53,23 @@ module TinyCss
       end
 
       contents
+    end
+
+    private
+    def split_by_closing_brace(string)
+      pattern = /(.+?\})/
+      ary = []
+
+      if string =~ pattern
+        string.gsub(pattern) { |matched| ary << matched }
+        if match = string.match(/.+\}(.+)$/)
+          ary << match.captures.first
+        end
+      else
+        ary << string
+      end
+
+      ary
     end
   end
 end

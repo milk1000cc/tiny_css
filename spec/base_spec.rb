@@ -1,6 +1,102 @@
 require File.dirname(__FILE__) + '/../lib/tiny_css'
 include TinyCss
 
+describe Base, 'CSS 文字列を指定してパースするとき' do
+  before do
+    @css1 = TinyCss.new.read_string('h3 { color: red; }')
+    @css2 = TinyCss.new.read_string('h1, p { color: red }')
+    @css3 = TinyCss.new.read_string("h3 { color: red; \n /*z-index: 4;*/\n" +
+                                    "background: blue }")
+    @css4 = TinyCss.new.read_string('h3,   div   .foo { color: red; ' +
+                                    'background: blue },div{color:red;}')
+    @selectors2 = ['h1', 'p']
+  end
+
+  it 'は、self を返すこと' do
+    @css1.should be_instance_of(Base)
+    @css2.should be_instance_of(Base)
+    @css3.should be_instance_of(Base)
+    @css4.should be_instance_of(Base)
+  end
+
+  it 'は、style[セレクタ][プロパティ] で値が取り出せること' do
+    @css1.style['h3']['color'].should == 'red'
+    @css2.style['h1']['color'].should == 'red'
+    @css2.style['p']['color'].should == 'red'
+    @css3.style['h3']['color'].should == 'red'
+    @css3.style['h3']['background'].should == 'blue'
+    @css4.style['h3']['color'].should == 'red'
+    @css4.style['h3']['background'].should == 'blue'
+    @css4.style['div']['color'].should == 'red'
+  end
+
+  it 'は、セレクタ文字列中のホワイトスペースが半角 1 スペースに変換されていること' do
+    @css4.style['div .foo']['color'].should == 'red'
+    @css4.style['div .foo']['background'].should == 'blue'
+  end
+
+  it 'は、コメント内のスタイルが反映されていないこと' do
+    @css3.style['h3']['z-index'].should_not == '4'
+  end
+
+  it 'は、style.keys で順番にセレクタが得られること' do
+    @css2.style.keys.should == @selectors2
+  end
+
+  it 'は、style[セレクタ].keys で順番にプロパティが得られること' do
+    @css4.style['div .foo'].keys.should == ['color', 'background']
+  end
+end
+
+describe Base, '} で終わらない CSS 文字列を指定してパースするとき' do
+  before do
+    @proc1 = Proc.new { TinyCss.new.read_string('h3 { color: red;') }
+    @proc2 = Proc.new {
+      TinyCss.new.read_string('h1, p { color: red }, f')
+    }
+    @proc3 = Proc.new {
+      TinyCss.new.read_string('h1, p { color: red }, div { margin: 0')
+    }
+  end
+
+  it 'は、例外 TinyCss::Error が発生すること' do
+    msg = "Invalid or unexpected style data 'h3 { color: red;'"
+    @proc1.should raise_error(Error, msg)
+    msg = "Invalid or unexpected style data ', f'"
+    @proc2.should raise_error(Error, msg)
+    msg = "Invalid or unexpected style data ', div { margin: 0'"
+    @proc3.should raise_error(Error, msg)
+  end
+end
+
+describe Base, 'セレクタの後 { で始まらない CSS 文字列を指定してパースするとき' do
+  before do
+    @proc1 = Proc.new { TinyCss.new.read_string('h3 color: red; }') }
+    @proc2 = Proc.new {
+      TinyCss.new.read_string('h1, p { color: red }, div }')
+    }
+  end
+
+  it 'は、例外 TinyCss::Error が発生すること' do
+    msg = "Invalid or unexpected style data 'h3 color: red; }'"
+    @proc1.should raise_error(Error, msg)
+
+    msg = "Invalid or unexpected style data ', div }'"
+    @proc2.should raise_error(Error, msg)
+  end
+end
+
+describe Base, 'プロパティと値が : で区切られていないとき' do
+  before do
+    @proc = Proc.new { TinyCss.new.read_string('h3 { color }') }
+  end
+
+  it 'は、例外 TinyCss::Error が発生すること' do
+    msg = "unexpected property ' color ' in style 'h3'"
+    @proc.should raise_error(Error, msg)
+  end
+end
+
 describe Base do
   before do
     @css = TinyCss.new.read(File.join(File.dirname(__FILE__), 'style.css'))
@@ -10,7 +106,7 @@ describe Base do
 
   describe Base, 'CSS ファイルを指定してパースするとき' do
     it 'は、self を返すこと' do
-      @css.should be_instance_of(TinyCss::Base)
+      @css.should be_instance_of(Base)
     end
 
     it 'は、style[セレクタ][プロパティ] で値が取り出せること' do
