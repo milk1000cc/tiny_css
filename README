@@ -48,6 +48,7 @@ sudo gem install milk1000cc-tiny_css --source=http://gems.github.com
 
 Caution
 =======
+
 TinyCss#style doesn't return Hash object but TinyCss::OrderedHash, and TinyCss::OrderedHash class doesn't inherit Hash object.
 
 I'm Japanese, and I'm not goot at English and Ruby, so please see the source code and edit them.
@@ -55,4 +56,5 @@ I'm Japanese, and I'm not goot at English and Ruby, so please see the source cod
 
 Author
 ======
+
 milk1000cc <info@milk1000.cc>
