@@ -1,0 +1,58 @@
+TinyCss
+=======
+
+a ruby module to read and write .css stylesheets
+
+
+Usage
+=====
+
+# In your .css file
+H1 { color: blue }
+H2 { color: red; font-family: Arial }
+.this, .that { color: yellow }
+
+# In your program
+require 'tiny_css'
+
+# Create a CSS stylesheet
+css = TinyCss.new
+
+# Open a CSS stylesheet
+css = css.read('style.css')
+
+# Reading properties
+# (key is coverted to string, so you can access same value by symbol)
+header_color = css.style['h1']['color']
+css.style['h2'].each { |property, value| p "#{ property }: #{ value }" }
+this_color = css.style[:this][:color]
+that_color = css.style[:that][:color]
+
+# Changing styles and properties
+css.style['.newstyle']['color'] = '#FFFFFF'  # Add a style
+css.style['h1']['color'] = 'black'           # Change a property
+
+# Save a CSS stylesheet
+css.write 'style.css'
+
+
+Install
+=======
+
+git clone git://github.com/milk1000cc/tiny_css.git
+
+or
+
+sudo gem install milk1000cc-tiny_css --source=http://gems.github.com
+
+
+Caution
+=======
+TinyCss#style doesn't return Hash object but TinyCss::OrderedHash, and TinyCss::OrderedHash class doesn't inherit Hash object.
+
+I'm Japanese, and I'm not goot at English and Ruby, so please see the source code and edit them.
+
+
+Author
+======
+milk1000cc <info@milk1000.cc>
