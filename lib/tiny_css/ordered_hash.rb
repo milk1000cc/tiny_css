@@ -22,6 +22,12 @@ module TinyCss
       self.keys << key unless self.keys.include?(key)
     end
 
+    def delete(key, &block)
+      key = key.to_s
+      self.keys.delete key
+      @hash.delete key, &block
+    end
+
     def dup
       dup = super
       dup.keys = self.keys.dup

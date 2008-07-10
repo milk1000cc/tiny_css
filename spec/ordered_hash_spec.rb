@@ -62,6 +62,64 @@ describe OrderedHash, '#dup について' do
   end
 end
 
+describe OrderedHash, '#delete について' do
+  before(:each) do
+    @oh = OrderedHash.new
+    @oh['foo'] = 3
+  end
+
+  it '存在するキーに対する関連を取り除いた場合は、取り除かれた値を返すこと' do
+    result = @oh.delete('foo')
+    result.should == 3
+  end
+
+  it '存在するキーに対する関連を取り除いた場合は、取り除かれた値を返すこと' +
+    '(シンボルでキーを指定した場合も)' do
+    result = @oh.delete(:foo)
+    result.should == 3
+  end
+
+  it '存在するキーに対する関連を取り除いた場合は、keys からそのキーがなくなっていること' do
+    @oh.keys.should include('foo')
+    @oh.delete 'foo'
+    @oh.keys.should_not include('foo')
+  end
+
+  it '存在するキーに対する関連を取り除いた場合は、keys からそのキーがなくなっていること' +
+    '(シンボルでキーを指定した場合も)' do
+    @oh.keys.should include('foo')
+    @oh.delete :foo
+    @oh.keys.should_not include('foo')
+  end
+
+  it '存在しないキーを指定された場合は、nil が返ること' do
+    result = @oh.delete('none')
+    result.should == nil
+
+    result = @oh.delete(:none)
+    result.should be_nil
+  end
+
+  it 'ブロックが与えられたときは、key にマッチするものがなかった時に評価して、' +
+    'その結果を返すこと' do
+    result = @oh.delete('foo') { |key| key + 'no' }
+    result.should == 3
+
+    result = @oh.delete('none') { |key| key + 'no' }
+    result.should == 'noneno'
+  end
+
+  it 'ブロックが与えられて、シンボルの key が与えられたときは' +
+    'key にマッチするものがなかった時にブロックを評価して、その結果を返すこと ' +
+    '(ブロックには文字列のキーが渡される)' do
+    result = @oh.delete(:foo) { |key| key + 'no' }
+    result.should == 3
+
+    result = @oh.delete(:none) { |key| key + 'no' }
+    result.should == 'noneno'
+  end
+end
+
 describe OrderedHash, '#each について' do
   before do
     @oh1, @oh2 = OrderedHash.new, OrderedHash.new

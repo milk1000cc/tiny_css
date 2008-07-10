@@ -31,6 +31,7 @@ that_color = css.style[:that][:color]
 # Changing styles and properties
 css.style['.newstyle']['color'] = '#FFFFFF'  # Add a style
 css.style['h1']['color'] = 'black'           # Change a property
+css.style['h2'].delete                       # Delete a style
 
 # Save a CSS stylesheet
 css.write 'style.css'         # Sort selectors and properties
