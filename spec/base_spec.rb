@@ -1,6 +1,36 @@
 require File.dirname(__FILE__) + '/../lib/tiny_css'
 include TinyCss
 
+describe Base, '削除に関して' do
+  before do
+    @css = TinyCss.new.read_string('h1, p { color: red; background: blue; }')
+  end
+
+  it 'セレクタを削除したら、style.keys にそのセレクタが含まれていないこと' do
+    @css.style.keys.should include('h1')
+    @css.style.delete 'h1'
+    @css.style.keys.should_not include('h1')
+  end
+
+  it 'セレクタを削除したら、write_string の結果にもそのセレクタが含まれていないこと' do
+    @css.style.delete 'h1'
+    @css.write_string.should == "p {\n\tbackground: blue;\n\tcolor: red;\n}\n"
+  end
+
+  it 'プロパティを削除したら、style[セレクタ].keys にそのプロパティが' +
+    '含まれていないこと' do
+    @css.style['h1'].keys.should include('color')
+    @css.style['h1'].delete 'color'
+    @css.style['h1'].keys.should_not include('color')
+  end
+
+  it 'プロパティを削除したら、write_string の結果にも反映されていること' do
+    @css.style['h1'].delete 'color'
+    @css.write_string.should == "p {\n\tbackground: blue;\n\tcolor: red;\n}\n" +
+      "h1 {\n\tbackground: blue;\n}\n"
+  end
+end
+
 describe Base, 'CSS 文字列を指定してパースするとき' do
   before do
     @css1 = TinyCss.new.read_string('h3 { color: red; }')
