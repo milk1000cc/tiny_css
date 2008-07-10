@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "tiny_css"
-  s.version = "0.0.2"
+  s.version = "0.12"
   s.date = "2008-07-10"
   s.summary = ""
   s.email = "info@milk1000.cc"
