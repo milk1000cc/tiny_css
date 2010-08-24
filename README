@@ -45,7 +45,7 @@ git clone git://github.com/milk1000cc/tiny_css.git
 
 or
 
-sudo gem install milk1000cc-tiny_css --source=http://gems.github.com
+sudo gem install tiny_css
 
 
 Caution
